@@ -1,3 +1,4 @@
+// functions
 function createGrid(dimensions) {
     for (let row = 0; row < dimensions; row++) {
         let newRow = document.createElement('div');
@@ -20,71 +21,58 @@ function createGrid(dimensions) {
         }
     }
     counter = 0;
+    let pixels = document.querySelectorAll('.pixel');
+    pixels.forEach(pixel => pixel.addEventListener('click', playerMove));   
 }
 
-function playerMove() { 
-    console.log(gameover);
-    if (!gameover) {
-        let num = parseInt(this.id);
-        let row = Math.floor(num / dimensions);
-        let col = num % dimensions;
-        if (board[row][col] === "") {
-            this.textContent = player;
-            // this.style.fontSize = "140px";
-            board[row][col] = player;
-            opponentMove();
-        }
-    }
-}
-  
-function checkWinner() {
-    let winner = null;
-  
-    // horizontal
-    for (let i = 0; i < dimensions; i++) {
-        if (board[i][0] !== "" && board[i][0] === board[i][1] && board[i][1] === board[i][2] && board[i][2] === board[i][3] && board[i][3] === board[i][4]) {
-            winner = board[i][0];
-        }
-    }
-  
-    // vertical
-    for (let i = 0; i < dimensions; i++) {
-        if (board[0][i] !== "" && board[0][i] === board[1][i] && board[1][i] === board[2][i] && board[2][i] === board[3][i] && board[3][i] === board[4][i]) {
-            winner = board[0][i];
-        }
-    }
-  
-    // diagonal
-    if (board[0][0] !== "" && board[0][0] === board[1][1] && board[1][1] === board[2][2] && board[2][2] === board[3][3] && board[3][3] === board[4][4]) {
-        winner = board[0][0];
-    }
-    if (board[0][4] !== "" && board[0][4] === board[1][3] && board[1][3] === board[2][2] && board[2][2] === board[3][1] && board[3][1] === board[4][0]) {
-        winner = board[2][0];
-    }
-  
-    // tie
-    let open = 0;
-    for (let i = 0; i < dimensions; i++) {
-        for (let j = 0; j < dimensions; j++) {
-            if (board[i][j] === "") {
-                open++;
+async function playerMove() { 
+    if (!running) {
+        if (!gameover) {
+            let num = parseInt(this.id);
+            let row = Math.floor(num / dimensions);
+            let col = num % dimensions;
+            if (board[row][col] === "") {
+                this.textContent = player;
+                board[row][col] = player;
+                running = true;
+                await sleep(500);
+                opponentMove();
+                running = false;
             }
         }
     }
+}
 
-    if (open === 0) return 0;
-    if (winner === null) return winner;
+function checkWinner() {
+    let winner = null;
+    for (let i = 0; i < dimensions; i++) {
+        if (board[i][0] !== "" && board[i][0] === board[i][1] && board[i][1] === board[i][2]) winner = board[i][0];
+    }
+    for (let i = 0; i < dimensions; i++) {
+        if (board[0][i] !== "" && board[0][i] === board[1][i] && board[1][i] === board[2][i]) winner = board[0][i];
+    }
+    if (board[0][0] !== "" && board[0][0] === board[1][1] && board[1][1] === board[2][2]) winner = board[0][0];
+    if (board[0][2] !== "" && board[0][2] === board[1][1] && board[1][1] === board[2][0]) winner = board[2][0];
+    let open = 0;
+    for (let i = 0; i < dimensions; i++) {
+        for (let j = 0; j < dimensions; j++) {
+            if (board[i][j] === "") open++;
+        }
+    }
+    if (winner === null) {
+        if (open === 0) return 0;
+        else return winner;
+    }
     else if (winner === player) return -1;
     else return 1;
 }
 
-// this doesn't work.... it doesn't make the optimal move (maybe b/c of error in checkWinner()?)
 function opponentMove() {
     let winner = checkWinner();
     if (winner !== null) {
         console.log(winner);
         gameover = true;
-        // endgame(winner);
+        endgame(winner);
     }
     else {
         let bestMove = 0;
@@ -110,7 +98,7 @@ function opponentMove() {
         let winner = checkWinner();
         if (winner !== null) {
             gameover = true;
-            // endgame(winner);
+            endgame(winner);
         }
     }
 }
@@ -150,92 +138,206 @@ function rec(board, isPlayer) {
     }
 }
 
-// this doesn't work.... it sets gameover too soon
-// function checkWinner() {
-//     let flag;
-//     for (let row = 0; row < dimensions - 1; row++) {
-//         flag = true;
-//         for (let col = 0; col < dimensions - 1; col++) {
-//             if (board[row][col] === "" || board[row][col] !== board[row][col + 1]) {
-//                 flag = false;
-//                 break;
-//             }
-//         }
-//         if (flag) {
-//             let winner = board[row][0];
-//             if (winner === player) return -1;
-//             else return 1;
-//         }
-//     }
-//     for (let col = 0; col < dimensions - 1; col++) {
-//         flag = true;
-//         for (let row = 0; row < dimensions - 1; row++) {
-//             if (board[row][col] === "" || board[row][col] !== board[row + 1][col]) {
-//                 flag = false;
-//                 break;
-//             }
-//         }
-//         if (flag) {
-//             let winner = board[0][col];
-//             if (winner === player) return -1;
-//             else return 1;
-//         }
-//     }
-//     for (let row = 0; row < dimensions - 1; row++) {
-//         flag = true;
-//         for (let col = 0; col < dimensions - 1; col++) {
-//             if (board[row][col] === "" || board[row][col] !== board[row + 1][col + 1]) {
-//                 flag = false;
-//                 break;
-//             }
-//         }
-//         if (flag) {
-//             let winner = board[0][0];
-//             if (winner === player) return -1;
-//             else return 1;
-//         }
-//     }
-//     for (let row = 0; row < dimensions - 1; row++) {
-//         flag = true;
-//         for (let col = dimensions - 1; col >= 0; col--) {
-//             if (board[row][col] === "" || board[row][col] !== board[row + 1][col - 1]) {
-//                 flag = false;
-//                 break;
-//             }
-//         }
-//         if (flag) {
-//             let winner = board[0][0];
-//             if (winner === player) return -1;
-//             else return 1;
-//         }
-//     }
-//     flag = true;
-//     outer: for (let row = 0; row < dimensions - 1; row++) {
-//         for (let col = 0; col < dimensions - 1; col++) {
-//             if (board[row][col] === "") {
-//                 flag = false;
-//                 break outer;
-//             }
-//         }
-//     }
-//     if (flag) return 0;
-//     return null;
-// }
+const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 
-// function endgame() {
+function endgame(winner) {
+    if (winner === 0) credits.appendChild(tie);
+    else credits.appendChild(loser);
+    credits.appendChild(playAgain);
+}
 
-// }
+function reset() {
+    credits.innerHTML = null;
+    selectedSymbol = null;
+    selectedTurn = null;
+    player = null;
+    opponent = null;
+    turnOrder = null;
+    gameover = false;
+    running = false;
+    counter = 0;
+    board = [];
+    grid.innerHTML = null;
+    display.innerHTML = null;
+    display.appendChild(start);
+}
 
-let player = "X";
-let opponent = "O";
+const title = document.querySelector('#title');
+const text = title.textContent;
+const delay = 100;
+let i = 0;
+
+setInterval(() => {
+    title.textContent = text.substring(0, i);
+    i++;
+    if (i == text.length) return;
+}, delay);
+
+function setX() {
+    if (!selectedSymbol) {
+        selectedSymbol = true;
+        player = "X";
+        opponent = "O";
+        if (selectedTurn) {
+            display.innerHTML = null;
+            display.appendChild(tictactoe);
+            createGrid(dimensions);
+            if (!turnOrder) opponentMove();
+        }
+    }
+}
+
+function setO() {
+    if (!selectedSymbol) {
+        selectedSymbol = true;
+        player = "O";
+        opponent = "X";
+        if (selectedTurn) {
+            display.innerHTML = null;
+            display.appendChild(tictactoe);
+            createGrid(dimensions);
+            if (!turnOrder) opponentMove();
+        }
+    }
+}
+
+function setFirst() {
+    if (!selectedTurn) {
+        selectedTurn = true;
+        turnOrder = true;
+        if (selectedSymbol) {
+            display.innerHTML = null;
+            display.appendChild(tictactoe);
+            createGrid(dimensions);
+        }
+    }
+}
+
+function setSecond() {
+    if (!selectedTurn) {
+        selectedTurn = true;
+        turnOrder = false;
+        if (selectedSymbol) {
+            display.innerHTML = null;
+            display.appendChild(tictactoe);
+            createGrid(dimensions);
+            opponentMove();
+        }
+    }
+}
+
+// parameters + other stuff
+let player;
+let opponent;
 let gameover = false;
-let dimensions = 5;
+let dimensions = 3;
 let counter = 0;
-let wins = 0, losses = 0, ties = 0;
 let board = [];
+let running = false;
+let turnOrder;
+let selectedTurn = false;
+let selectedSymbol = false;
 
-const grid = document.querySelector("#grid");
-createGrid(dimensions);
+// endgame stuff
+const credits = document.querySelector('#credits');
 
-let pixels = document.querySelectorAll('.pixel');
-pixels.forEach(pixel => pixel.addEventListener('click', playerMove));
+const playAgain = document.createElement('button');
+playAgain.classList.add('button');
+playAgain.textContent = 'Play Again';
+playAgain.addEventListener('click', reset);
+
+const tie = document.createElement('h1');
+tie.textContent = "You tied!";
+
+const loser = document.createElement('h1');
+loser.textContent = "You lost!";
+
+// dark-mode stuff
+let lightMode = true;
+const toggle = document.querySelector('#toggle');
+const header = document.querySelector('h1');
+toggle.addEventListener('click', switchMode);
+
+function switchMode() {
+    lightMode = !lightMode;
+    lightMode ? toggle.innerHTML = `<img src="img/sun.svg" alt="sun icon" class="icon">` : toggle.innerHTML = `<img src="img/moon.svg" alt="moon icon" class="icon">`;
+    document.body.classList.toggle("dark_body");
+    title.classList.toggle("dark_text");
+    loser.classList.toggle("dark_text");
+    tie.classList.toggle("dark_text");
+    topSection.classList.toggle("dark_text");
+    turn.classList.toggle("dark_group");
+    symbol.classList.toggle("dark_group");
+    turn_title.classList.toggle("dark_text");
+    symbol_title.classList.toggle("dark_text");
+}
+
+let display = document.querySelector('#display');
+
+// starting/selections page
+let first = document.createElement('button');
+first.textContent = "First";
+first.classList.add("button");
+first.classList.add("dark_button");
+let second = document.createElement('button');
+second.textContent = "Second";
+second.classList.add("button");
+second.classList.add("dark_button");
+let turn_buttons = document.createElement('div');
+turn_buttons.appendChild(first);
+turn_buttons.appendChild(second);
+turn_buttons.classList.add("mini_bottom");
+let turn_title = document.createElement('div');
+turn_title.textContent = "Turn";
+turn_title.classList.add("mini_top");
+let turn = document.createElement('div');
+turn.appendChild(turn_title);
+turn.appendChild(turn_buttons);
+turn.classList.add("group");
+
+let x = document.createElement('button');
+x.textContent = "X";
+x.classList.add("button");
+x.classList.add("dark_button");
+let o = document.createElement('button');
+o.textContent = "O";
+o.classList.add("button");
+o.classList.add("dark_button");
+let symbol_buttons = document.createElement('div');
+symbol_buttons.append(x);
+symbol_buttons.append(o);
+symbol_buttons.classList.add("mini_bottom");
+let symbol_title = document.createElement('div');
+symbol_title.textContent = "Symbol";
+symbol_title.classList.add("mini_top");
+let symbol = document.createElement('div');
+symbol.appendChild(symbol_title);
+symbol.appendChild(symbol_buttons);
+symbol.classList.add("group");
+
+let bottomSection = document.createElement('div');
+bottomSection.append(symbol);
+bottomSection.append(turn);
+bottomSection.classList.add("bottom");
+let topSection = document.createElement('div');
+topSection.textContent = "Select An Option For Each to Continue";
+topSection.classList.add("top");
+
+let start = document.createElement('div');
+start.classList.add("start");
+start.appendChild(topSection);
+start.appendChild(bottomSection);
+display.appendChild(start);
+
+toggle.addEventListener('click', switchMode);
+first.addEventListener('click', setFirst);
+second.addEventListener('click', setSecond);
+x.addEventListener('click', setX);
+o.addEventListener('click', setO);
+
+// tic-tac-toe board
+let tictactoe = document.createElement('div');
+tictactoe.classList.add('tictactoe');
+let grid = document.createElement('div');
+grid.setAttribute('id', "grid");
+tictactoe.appendChild(grid);
