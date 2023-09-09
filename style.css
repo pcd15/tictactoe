@@ -1,0 +1,48 @@
+#tictactoe {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    background-color: rgb(45, 45, 45);
+    height: 540px;
+    width: 540px;
+    border-radius: 12px;
+    margin: 40px auto;
+}
+
+.header {
+    margin-top: 40px;
+    text-align: center;
+}
+
+#title {
+    font-size: 80px;
+    font-family: 'Caveat', cursive;
+    color: rgb(45, 45, 45);
+    margin-top: 40px;
+}
+
+#grid {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 500px;
+    width: 500px;
+    background-color: rgb(210, 210, 210);
+}
+
+.row {
+    display: flex;
+    flex: 1;
+}
+
+.pixel {
+    border: 0.5px solid rgb(175, 175, 175);
+    flex: 1;
+    font-family: 'Londrina Sketch', cursive;
+    font-size: 8.5em;
+    text-align: center;
+    font-weight: bold;
+    color: black;
+}
