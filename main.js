@@ -173,7 +173,7 @@ setInterval(() => {
     if (i == text.length) return;
 }, delay);
 
-function setX() {
+async function setX() {
     if (!selectedSymbol) {
         selectedSymbol = true;
         player = "X";
@@ -182,12 +182,15 @@ function setX() {
             display.innerHTML = null;
             display.appendChild(tictactoe);
             createGrid(dimensions);
-            if (!turnOrder) opponentMove();
+            if (!turnOrder) {
+                await sleep(1000);
+                opponentMove();
+            }
         }
     }
 }
 
-function setO() {
+async function setO() {
     if (!selectedSymbol) {
         selectedSymbol = true;
         player = "O";
@@ -196,7 +199,10 @@ function setO() {
             display.innerHTML = null;
             display.appendChild(tictactoe);
             createGrid(dimensions);
-            if (!turnOrder) opponentMove();
+            if (!turnOrder) {
+                await sleep(1000);
+                opponentMove();
+            }
         }
     }
 }
@@ -213,7 +219,7 @@ function setFirst() {
     }
 }
 
-function setSecond() {
+async function setSecond() {
     if (!selectedTurn) {
         selectedTurn = true;
         turnOrder = false;
@@ -221,6 +227,7 @@ function setSecond() {
             display.innerHTML = null;
             display.appendChild(tictactoe);
             createGrid(dimensions);
+            await sleep(1000);
             opponentMove();
         }
     }
