@@ -26,7 +26,7 @@ function createGrid(dimensions) {
 }
 
 async function playerMove() { 
-    if (!running) {
+    if (!running && turnOrder) {
         if (!gameover) {
             let num = parseInt(this.id);
             let row = Math.floor(num / dimensions);
@@ -174,7 +174,7 @@ setInterval(() => {
 }, delay);
 
 async function setX() {
-    if (!selectedSymbol) {
+    // if (!selectedSymbol) {
         selectedSymbol = true;
         player = "X";
         opponent = "O";
@@ -185,13 +185,14 @@ async function setX() {
             if (!turnOrder) {
                 await sleep(1000);
                 opponentMove();
+                turnOrder = true;
             }
         }
-    }
+    // }
 }
 
 async function setO() {
-    if (!selectedSymbol) {
+    // if (!selectedSymbol) {
         selectedSymbol = true;
         player = "O";
         opponent = "X";
@@ -202,13 +203,14 @@ async function setO() {
             if (!turnOrder) {
                 await sleep(1000);
                 opponentMove();
+                turnOrder = true;
             }
         }
-    }
+    // }
 }
 
 function setFirst() {
-    if (!selectedTurn) {
+    // if (!selectedTurn) {
         selectedTurn = true;
         turnOrder = true;
         if (selectedSymbol) {
@@ -216,11 +218,11 @@ function setFirst() {
             display.appendChild(tictactoe);
             createGrid(dimensions);
         }
-    }
+    // }
 }
 
 async function setSecond() {
-    if (!selectedTurn) {
+    // if (!selectedTurn) {
         selectedTurn = true;
         turnOrder = false;
         if (selectedSymbol) {
@@ -229,8 +231,9 @@ async function setSecond() {
             createGrid(dimensions);
             await sleep(1000);
             opponentMove();
+            turnOrder = true;
         }
-    }
+    // }
 }
 
 // parameters + other stuff
@@ -244,6 +247,7 @@ let running = false;
 let turnOrder;
 let selectedTurn = false;
 let selectedSymbol = false;
+let hasMoved = false;
 
 // endgame stuff
 const credits = document.querySelector('#credits');
